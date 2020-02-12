@@ -36,7 +36,7 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 	}
 
 	if endpoint == "" {
-		return nil, fmt.Errorf("%T is not a valid argument type!\n", id)
+		return nil, fmt.Errorf("%T is not a valid argument type", id)
 	}
 
 	// Configure the url now that we have an endpoint
