@@ -11,11 +11,11 @@ import (
 type Pokemon struct {
 	name      string
 	id        int
+	spriteURL string
+	weight    int
 	hp        int
 	attack    int
 	defense   int
-	weight    int
-	spriteURL string
 	abilities []string
 }
 
@@ -60,16 +60,28 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 
 	// And now that we finally parsed the data, we can assign values to our pokemon
 	p := new(Pokemon)
-	p.name = data["name"].(string) // The .(string) is type assertion
-	p.id = data["id"].(int)        // Type assertion provides access to the actual value of an interface
+	p.name = data["name"].(string)           // The .(string) is type assertion
+	p.id = int(data["id"].(float64))         // Type assertion provides access to the actual value of an interface
+	p.weight = int(data["weight"].(float64)) // Also note that the values parsed by default are float64, remember to cast it to int
 
+	// This next part required trial and error
+	// Go's debugger will tell you the type to assert each subsequent key for embedded types
+	// Since the url for the pokemon's sprite is an object embedded within an object...
+	// I have to assert the type of the first key as a (map[string]interface{})
+
+	p.spriteURL = data["sprites"].(map[string]interface{})["front_default"].(string)
 	// Getting into the embedded fields of a JSON is actually really, REALLY tricky though
 	// This means we have to know the types of each embedded JSON object
 	// In this case, data["stats"] needs to be asserted to ([]interface{}) because it's a slice we need to index
 	// Then, data["stats"].([]interface)[5] needs to be asserted to (map[string]interface{}) a map of strings to interfaces
 	// Finally, the ["base_stat"] key is asserted to a (float64), which we'll ultimately convert to an int
-	p.hp = int(data["stats"].([]interface{})[5].(map[string]interface{})["base_stat"].(float64))      // From here on it's pretty simple to access keys, indices and values
-	p.attack = int(data["stats"].([]interface{})[4].(map[string]interface{})["base_stat"].(float64))  // From here on it's pretty simple to access keys, indices and values
-	p.defense = int(data["stats"].([]interface{})[3].(map[string]interface{})["base_stat"].(float64)) // From here on it's pretty simple to access keys, indices and values
+	p.hp = int(data["stats"].([]interface{})[5].(map[string]interface{})["base_stat"].(float64))
+	p.attack = int(data["stats"].([]interface{})[4].(map[string]interface{})["base_stat"].(float64))
+	p.defense = int(data["stats"].([]interface{})[3].(map[string]interface{})["base_stat"].(float64))
+
+	parsedAbilities := data["abilities"].([]interface{})
+	for i := range parsedAbilities {
+		p.abilities = append(p.abilities, parsedAbilities[i].(map[string]interface{})["ability"].(map[string]interface{})["name"].(string))
+	}
 	return p, nil
 }
