@@ -10,11 +10,11 @@ import (
 // Pokemon struct
 type Pokemon struct {
 	name      string
-	id        int8
-	hp        int8
-	attack    int8
-	defense   int8
-	weight    int8
+	id        int
+	hp        int
+	attack    int
+	defense   int
+	weight    int
 	spriteURL string
 	abilities []string
 }
@@ -60,7 +60,10 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 
 	// And now that we finally parsed the data, we can assign values to our pokemon
 	p := new(Pokemon)
-	p.name = data["name"].(string)
-	p.id = data["id"].(int8)
+	p.name = data["name"].(string)             // The .(string) is type assertion
+	p.id = data["id"].(int)                    // Type assertion provides access to the actual value of an interface
+	p.hp = data["stats"][5]["base_stat"].(int) // From here on it's pretty simple to access keys, indices and values
+	p.attack = data["stats"][4]["base_stat"].(int)
+	p.defense = data["stats"][3]["base_stat"].(int)
 	return p, nil
 }
