@@ -60,10 +60,16 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 
 	// And now that we finally parsed the data, we can assign values to our pokemon
 	p := new(Pokemon)
-	p.name = data["name"].(string)             // The .(string) is type assertion
-	p.id = data["id"].(int)                    // Type assertion provides access to the actual value of an interface
-	p.hp = data["stats"][5]["base_stat"].(int) // From here on it's pretty simple to access keys, indices and values
-	p.attack = data["stats"][4]["base_stat"].(int)
-	p.defense = data["stats"][3]["base_stat"].(int)
+	p.name = data["name"].(string) // The .(string) is type assertion
+	p.id = data["id"].(int)        // Type assertion provides access to the actual value of an interface
+
+	// Getting into the embedded fields of a JSON is actually really, REALLY tricky though
+	// This means we have to know the types of each embedded JSON object
+	// In this case, data["stats"] needs to be asserted to ([]interface{}) because it's a slice we need to index
+	// Then, data["stats"].([]interface)[5] needs to be asserted to (map[string]interface{}) a map of strings to interfaces
+	// Finally, the ["base_stat"] key is asserted to a (float64), which we'll ultimately convert to an int
+	p.hp = int(data["stats"].([]interface{})[5].(map[string]interface{})["base_stat"].(float64))      // From here on it's pretty simple to access keys, indices and values
+	p.attack = int(data["stats"].([]interface{})[4].(map[string]interface{})["base_stat"].(float64))  // From here on it's pretty simple to access keys, indices and values
+	p.defense = int(data["stats"].([]interface{})[3].(map[string]interface{})["base_stat"].(float64)) // From here on it's pretty simple to access keys, indices and values
 	return p, nil
 }
