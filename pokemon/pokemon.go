@@ -9,6 +9,7 @@ import (
 
 // Pokemon struct
 type Pokemon struct {
+	name      string
 	id        int8
 	hp        int8
 	attack    int8
@@ -52,8 +53,14 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 	// Get parsing boiz
 	var data map[string]interface{}
 
-	json.Unmarshal(body, &data)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil, err
+	}
 
+	// And now that we finally parsed the data, we can assign values to our pokemon
 	p := new(Pokemon)
+	p.name = data["name"].(string)
+	p.id = data["id"].(int8)
 	return p, nil
 }
