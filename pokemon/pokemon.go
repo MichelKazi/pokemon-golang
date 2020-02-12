@@ -20,6 +20,9 @@ type Pokemon struct {
 }
 
 // NewPokemon is a constructor for pokemon
+// It takes in one argument, an ID or a name.
+// The parameter is used to query the pokeapi, and a new pokemon object is initialized.
+// The initialized pokemon is then returned
 func NewPokemon(id interface{}) (*Pokemon, error) {
 	var endpoint string
 
@@ -30,6 +33,10 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 		endpoint = fmt.Sprintf("name/%s.json", id)
 	case int:
 		endpoint = fmt.Sprintf("id/%d.json", id)
+	}
+
+	if endpoint == "" {
+		return nil, fmt.Errorf("%T is not a valid argument type!\n", id)
 	}
 
 	// Configure the url now that we have an endpoint
