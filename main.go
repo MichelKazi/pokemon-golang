@@ -1,8 +1,16 @@
 package main
 
-import "github.com/pokemon-golang/pokemon"
+import (
+	"fmt"
+	"log"
+
+	"github.com/michelkazi/pokemon-golang/pokemon"
+)
 
 func main() {
-	p := pokemon.NewPokemon(25)
-
+	p, err := pokemon.NewPokemon(25)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(p)
 }
