@@ -2,8 +2,6 @@ package pokemon
 
 import (
 	"fmt"
-	"math"
-	"strconv"
 )
 
 // Pokemon struct
@@ -18,16 +16,20 @@ type Pokemon struct {
 }
 
 // NewPokemon is a constructor for pokemon
-func NewPokemon(id int) *Pokemon {
-
+func NewPokemon(id interface{}) *Pokemon {
 	var endpoint string
-	if math.IsNaN(id) {
-		endpoint = id
-	} else {
-		endpoint = strconv.Itoa(id)
+
+	// Check if the parameter passed is an int or string
+	// This will determine what endpoint to hit when I query
+	switch id.(type) {
+	case string:
+		endpoint = fmt.Sprintf("name/%s.json", id)
+	case int:
+		endpoint = fmt.Sprintf("id/%d.json", id)
 	}
 
 	p := new(Pokemon)
-	url := fmt.Sprintf("https://fizal.me/pokeapi/v2/%s/%s.json")
+	url := fmt.Sprintf("https://fizal.me/pokeapi/v2/%s", endpoint)
+
 	return p
 }
