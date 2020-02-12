@@ -1,7 +1,10 @@
 package pokemon
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
 // Pokemon struct
@@ -16,7 +19,7 @@ type Pokemon struct {
 }
 
 // NewPokemon is a constructor for pokemon
-func NewPokemon(id interface{}) *Pokemon {
+func NewPokemon(id interface{}) (*Pokemon, error) {
 	var endpoint string
 
 	// Check if the parameter passed is an int or string
@@ -28,8 +31,29 @@ func NewPokemon(id interface{}) *Pokemon {
 		endpoint = fmt.Sprintf("id/%d.json", id)
 	}
 
-	p := new(Pokemon)
-	url := fmt.Sprintf("https://fizal.me/pokeapi/v2/%s", endpoint)
+	// Configure the url now that we have an endpoint
+	url := fmt.Sprintf("https://fizal.me/pokeapi/api/v2/%s", endpoint)
 
-	return p
+	// Making a GET request with our URL
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	// Deferring the Close() execution of res.Body is important to prevent resource leaks
+	defer res.Body.Close()
+
+	// Read the body of the response, and save it in var body
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get parsing boiz
+	var data map[string]interface{}
+
+	json.Unmarshal(body, &data)
+
+	p := new(Pokemon)
+	return p, nil
 }
