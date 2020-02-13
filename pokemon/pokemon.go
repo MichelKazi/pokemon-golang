@@ -94,3 +94,11 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 	}
 	return p, nil
 }
+
+func (p Pokemon) fight(rival *Pokemon) {
+	fmt.Printf("%s dealt %d damage to %s", p.name, p.attack, rival.name)
+	rival.hp = rival.hp - p.attack
+	if rival.hp <= 0 {
+		fmt.Printf("%s is unconscious!", rival.name)
+	}
+}
