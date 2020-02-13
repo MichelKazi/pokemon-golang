@@ -9,14 +9,15 @@ import (
 
 // Pokemon struct
 type Pokemon struct {
-	name      string
-	id        int
-	spriteURL string
-	weight    int
-	hp        int
-	attack    int
-	defense   int
-	abilities []string
+	name        string
+	id          int
+	spriteFront string
+	spriteBack  string
+	weight      int
+	hp          int
+	attack      int
+	defense     int
+	abilities   []string
 }
 
 // NewPokemon is a constructor for pokemon
@@ -76,7 +77,8 @@ func NewPokemon(id interface{}) (*Pokemon, error) {
 	// Since the url for the pokemon's sprite is an object embedded within an object...
 	// I have to assert the type of the first key as a (map[string]interface{})
 
-	p.spriteURL = data["sprites"].(map[string]interface{})["front_default"].(string)
+	p.spriteFront = data["sprites"].(map[string]interface{})["front_default"].(string)
+	p.spriteBack = data["sprites"].(map[string]interface{})["back_default"].(string)
 	// Getting into the embedded fields of a JSON is actually really, REALLY tricky though
 	// This means we have to know the types of each embedded JSON object
 	// In this case, data["stats"] needs to be asserted to ([]interface{}) because it's a slice we need to index
