@@ -102,3 +102,7 @@ func (p Pokemon) fight(rival *Pokemon) {
 		fmt.Printf("%s is unconscious!", rival.name)
 	}
 }
+
+func (p Pokemon) heal(boost int) {
+
+}
